@@ -33,6 +33,10 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
 // Configure Expo autolinking
 expoAutolinking.useExpoModules()
 
+// Apply React Native Community CLI autolinking
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
+applyNativeModulesSettingsGradle(settings)
+
 rootProject.name = 'FPV Drone Racing'
 
 expoAutolinking.useExpoVersionCatalog()
