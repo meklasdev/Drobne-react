@@ -14,17 +14,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: false
       - uses: actions/setup-node@v4
         with:
           node-version: 20
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
       - uses: android-actions/setup-android@v3
       - name: Install Android SDK packages
         run: |
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;27.1.12297006"
           yes | sdkmanager --licenses
       - name: Install NPM deps
         working-directory: FPVDroneGame
@@ -34,7 +36,10 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build release
         working-directory: FPVDroneGame/android
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
       - name: Find APK
         id: apk
         run: echo "path=$(find FPVDroneGame/android/app/build/outputs/apk/release -name '*.apk' -print -quit)" >> $GITHUB_OUTPUT

@@ -31,6 +31,27 @@ allprojects {
     mavenCentral()
     maven { url 'https://www.jitpack.io' }
   }
+  
+  // Fix for expo-gl-cpp classifier deprecation warning
+  afterEvaluate { project ->
+    if (project.name == 'expo-gl-cpp') {
+      project.tasks.withType(org.gradle.api.tasks.bundling.Jar) { task ->
+        if (task.name == 'androidSourcesJar') {
+          task.archiveClassifier = 'sources'
+        }
+      }
+    }
+  }
+}
+
+// Define Android SDK versions for all modules
+ext {
+    buildToolsVersion = "35.0.0"
+    minSdkVersion = 24
+    compileSdkVersion = 35
+    targetSdkVersion = 35
+    ndkVersion = "27.1.12297006"
+    kotlinVersion = "2.0.21"
 }
 
 apply plugin: "expo-root-project"
