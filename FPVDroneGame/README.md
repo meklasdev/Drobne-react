@@ -55,6 +55,35 @@ To build an APK for Android installation:
 npx expo build:android --type apk
 ```
 
+### Building APK from a phone (no PC)
+
+There are two easy phone-only options:
+
+1) GitHub Actions (one-tap Release)
+- Open the GitHub app (or mobile web) on this repo
+- Go to Releases → Create a new release
+- Set tag name like `v1.0.2` (it can be anything starting with `v`)
+- Publish the release
+- The workflow will build `app-release.apk` and attach it to the Release in ~5–15 minutes
+- Download the APK from the Release page and install on your Android device
+
+2) Expo EAS Cloud Build (via Termux)
+- Install Termux from F-Droid
+- In Termux:
+  ```bash
+  pkg update && pkg install nodejs git -y
+  git clone <this-repo-url>
+  cd Drobne-react/FPVDroneGame
+  npm ci --legacy-peer-deps
+  npx --yes eas-cli@latest login
+  npx eas-cli build --platform android --profile production
+  ```
+- After the build finishes, open the URL printed by the command and download the APK
+
+Notes
+- The repo already contains a CI workflow that builds and uploads the APK to GitHub Releases on every `v*` tag
+- The generated APK is signed with a debug key for easy installation; for Play Store upload create a proper release keystore
+
 ## Controls
 
 ### Touch Controls
