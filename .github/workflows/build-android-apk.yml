@@ -1,4 +1,4 @@
-name: android-apk
+name: build-android-apk
 on:
   push:
     tags:
@@ -35,7 +35,7 @@ jobs:
 
       - name: Install Android SDK packages
         run: |
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;27.1.12297006"
           yes | sdkmanager --licenses
 
       - name: Fix Git URL for npm (prevent exit 128)
@@ -44,19 +44,23 @@ jobs:
           git config --global url."https://".insteadOf "git://"
 
       - name: Install npm deps
+        working-directory: FPVDroneGame
         run: npm ci --legacy-peer-deps
 
       - name: Gradle perms
-        working-directory: android
+        working-directory: FPVDroneGame/android
         run: chmod +x ./gradlew
 
       - name: Build release
-        working-directory: android
-        run: ./gradlew assembleRelease
+        working-directory: FPVDroneGame/android
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
 
       - name: Find APK
         id: apk
-        run: echo "path=$(find android/app/build/outputs/apk/release -name '*.apk' -print -quit)" >> $GITHUB_OUTPUT
+        run: echo "path=$(find FPVDroneGame/android/app/build/outputs/apk/release -name '*.apk' -print -quit)" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
